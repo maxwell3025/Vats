@@ -31,9 +31,9 @@ public class VatBlock extends BaseEntityBlock {
             return InteractionResult.SUCCESS;
         } else {
             BlockEntity blockentity = level.getBlockEntity(pos);
-            if (blockentity instanceof VatBlockEntity) {
-                ((VatBlockEntity) blockentity).increment();
-                player.sendMessage(new TextComponent("clicked "+((VatBlockEntity) blockentity).getClickTimes() + "times"), player.getUUID());
+            if (blockentity instanceof VatBlockEntity vatBlockEntity) {
+                vatBlockEntity.increment();
+                player.sendMessage(new TextComponent(String.format("clicked %d times", vatBlockEntity.getClickTimes())), player.getUUID());
             }
             return InteractionResult.CONSUME;
         }
