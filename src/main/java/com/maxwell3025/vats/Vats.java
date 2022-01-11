@@ -1,5 +1,6 @@
 package com.maxwell3025.vats;
 
+import com.maxwell3025.vats.api.Chemical;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -72,6 +73,10 @@ public class Vats
     @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents {
         @SubscribeEvent
+        public static void onNewRegistry(final RegistryEvent.NewRegistry newRegistryEvent) {
+            RegisterHandler.newRegister();
+        }
+        @SubscribeEvent
         public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
             RegisterHandler.registerBlocks(blockRegistryEvent.getRegistry());
         }
@@ -82,6 +87,10 @@ public class Vats
         @SubscribeEvent
         public static void onBlockEntitiesRegistry(final RegistryEvent.Register<BlockEntityType<?>> blockEntityRegistryEvent) {
             RegisterHandler.registerBlockEntities(blockEntityRegistryEvent.getRegistry());
+        }
+        @SubscribeEvent
+        public static void onChemicalsRegistry(final RegistryEvent.Register<Chemical> chemicalRegistryEvent) {
+            RegisterHandler.registerChemicals(chemicalRegistryEvent.getRegistry());
         }
     }
 }

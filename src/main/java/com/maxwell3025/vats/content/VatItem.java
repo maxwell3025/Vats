@@ -1,4 +1,4 @@
-package com.maxwell3025.vats;
+package com.maxwell3025.vats.content;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;

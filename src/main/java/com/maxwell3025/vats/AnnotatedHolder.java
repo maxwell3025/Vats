@@ -1,7 +1,6 @@
 package com.maxwell3025.vats;
 
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
+import com.maxwell3025.vats.content.VatBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 
