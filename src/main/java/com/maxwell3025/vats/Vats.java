@@ -1,7 +1,11 @@
 package com.maxwell3025.vats;
 
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -69,8 +73,15 @@ public class Vats
     public static class RegistryEvents {
         @SubscribeEvent
         public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
-            // register a new block here
-            LOGGER.info("HELLO from Register Block");
+            RegisterHandler.registerBlocks(blockRegistryEvent.getRegistry());
+        }
+        @SubscribeEvent
+        public static void onItemsRegistry(final RegistryEvent.Register<Item> itemRegistryEvent) {
+            RegisterHandler.registerItems(itemRegistryEvent.getRegistry());
+        }
+        @SubscribeEvent
+        public static void onBlockEntitiesRegistry(final RegistryEvent.Register<BlockEntityType<?>> blockEntityRegistryEvent) {
+            RegisterHandler.registerBlockEntities(blockEntityRegistryEvent.getRegistry());
         }
     }
 }
