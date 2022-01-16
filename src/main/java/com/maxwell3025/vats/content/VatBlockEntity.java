@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 
 public class VatBlockEntity extends BlockEntity {
     private static final Logger LOGGER = LogManager.getLogger();
-    private int clickTimes = 0;
     private Mixture mixture = new Mixture();
     private final double capacity = 1000;
 
@@ -21,11 +20,6 @@ public class VatBlockEntity extends BlockEntity {
 
     public VatBlockEntity(BlockPos pos, BlockState state) {
         super(AnnotatedHolder.BLOCKENTITYVAT, pos, state);
-    }
-
-    public void increment() {
-        clickTimes++;
-        this.setChanged();
     }
 
     public double addMixture(Mixture addedMixture, boolean discrete) {
@@ -43,14 +37,9 @@ public class VatBlockEntity extends BlockEntity {
         return 0;
     }
 
-    public int getClickTimes() {
-        return clickTimes;
-    }
-
     @Override
     public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        tag.putInt("clickTimes", clickTimes);
         CompoundTag mixtureTag = new CompoundTag();
         mixture.save(mixtureTag);
         tag.put("mixture", mixtureTag);
@@ -61,6 +50,5 @@ public class VatBlockEntity extends BlockEntity {
         super.load(tag);
         CompoundTag contentTag = tag.getCompound("mixture");
         mixture = new Mixture(contentTag);
-        clickTimes = tag.getInt("clickTimes");
     }
 }

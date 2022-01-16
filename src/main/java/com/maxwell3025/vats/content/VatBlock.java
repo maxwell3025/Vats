@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -34,8 +35,6 @@ public class VatBlock extends BaseEntityBlock {
         } else {
             BlockEntity blockentity = level.getBlockEntity(pos);
             if (blockentity instanceof VatBlockEntity vatBlockEntity) {
-                vatBlockEntity.increment();
-                player.sendMessage(new TextComponent(String.format("clicked %d times", vatBlockEntity.getClickTimes())), player.getUUID());
                 //TODO make this more generalized
                 if(player.getItemInHand(hand).getItem() == Items.WATER_BUCKET){
                     double amountUsed = vatBlockEntity.addMixture(new Mixture(VatChemicals.WATER, 1000), true);

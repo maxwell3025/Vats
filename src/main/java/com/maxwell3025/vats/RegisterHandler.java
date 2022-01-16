@@ -25,7 +25,6 @@ public class RegisterHandler {
     }
 
     public static void registerBlocks(IForgeRegistry<Block> register){
-        LOGGER.info("block registry: "+register.getRegistryName());
         register.register(new VatBlock(BlockBehaviour.Properties.of(Material.STONE)).setRegistryName("vat"));
     }
     public static void registerItems(IForgeRegistry<Item> register){
@@ -36,7 +35,6 @@ public class RegisterHandler {
         register.register(vatBlockEntity.setRegistryName("vat"));
     }
     public static void registerChemicals(IForgeRegistry<Chemical> register){
-        LOGGER.info("chemical registry: "+register.getRegistryName());
         register.register(new WaterChemical().setRegistryName("water"));
     }
 }
