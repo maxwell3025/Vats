@@ -11,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -30,21 +29,22 @@ public class VatBlock extends BaseEntityBlock {
 
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
-        if (level.isClientSide) {
-            return InteractionResult.SUCCESS;
-        } else {
-            BlockEntity blockentity = level.getBlockEntity(pos);
-            if (blockentity instanceof VatBlockEntity vatBlockEntity) {
-                //TODO make this more generalized
-                if(player.getItemInHand(hand).getItem() == Items.WATER_BUCKET){
-                    double amountUsed = vatBlockEntity.addMixture(new Mixture(VatChemicals.WATER, 1000), true);
-                    if(amountUsed>0){
-                        player.setItemInHand(hand, new ItemStack(Items.BUCKET));
-                    }
+        BlockEntity blockentity = level.getBlockEntity(pos);
+        if (blockentity instanceof VatBlockEntity vatBlockEntity) {
+            ItemStack handItems = player.getItemInHand(hand);
+            if(handItems.getItem() == Items.WATER_BUCKET){
+                double amountUsed = vatBlockEntity.addMixture(new Mixture(VatChemicals.WATER, 1000), true);
+                if(amountUsed>0&&!player.isCreative()){
+                    player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+                    return InteractionResult.SUCCESS;
                 }
-                player.sendMessage(new TextComponent(vatBlockEntity.getMixture().toString()), player.getUUID());
+                return InteractionResult.FAIL;
             }
-            return InteractionResult.CONSUME;
+            if(handItems.getItem() == Items.DEBUG_STICK && level.isClientSide) {
+                player.sendMessage(new TextComponent(vatBlockEntity.getMixture().toString()), player.getUUID());
+                return InteractionResult.SUCCESS;
+            }
         }
+        return InteractionResult.PASS;
     }
 }
