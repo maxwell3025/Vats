@@ -34,8 +34,8 @@ public class VatBlock extends BaseEntityBlock {
             ItemStack handItems = player.getItemInHand(hand);
             if(handItems.getItem() == Items.WATER_BUCKET){
                 double amountUsed = vatBlockEntity.addMixture(new Mixture(VatChemicals.WATER, 1000), true);
-                if(amountUsed>0&&!player.isCreative()){
-                    player.setItemInHand(hand, new ItemStack(Items.BUCKET));
+                if(amountUsed>0){
+                    if(!player.isCreative()) player.setItemInHand(hand, new ItemStack(Items.BUCKET));
                     return InteractionResult.SUCCESS;
                 }
                 return InteractionResult.FAIL;

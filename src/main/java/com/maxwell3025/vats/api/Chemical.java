@@ -6,4 +6,7 @@ public abstract class Chemical extends ForgeRegistryEntry<Chemical> {
     public Chemical(){
 
     }
+    public double mbPerMole(){
+        return 1;
+    }
 }
