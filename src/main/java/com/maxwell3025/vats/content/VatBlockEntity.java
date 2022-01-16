@@ -1,35 +1,66 @@
 package com.maxwell3025.vats.content;
 
 import com.maxwell3025.vats.AnnotatedHolder;
+import com.maxwell3025.vats.api.Mixture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 public class VatBlockEntity extends BlockEntity {
     private static final Logger LOGGER = LogManager.getLogger();
     private int clickTimes = 0;
+    private Mixture mixture = new Mixture();
+    private final double capacity = 1000;
+
+    public Mixture getMixture() {
+        return mixture;
+    }
+
     public VatBlockEntity(BlockPos pos, BlockState state) {
         super(AnnotatedHolder.BLOCKENTITYVAT, pos, state);
     }
-    public void increment(){
+
+    public void increment() {
         clickTimes++;
         this.setChanged();
     }
-    public int getClickTimes(){
+
+    public double addMixture(Mixture addedMixture, boolean discrete) {
+        if (discrete) {
+            if (addedMixture.getAmount() + mixture.getAmount() > capacity) {
+                return 0;
+            }else{
+                mixture.add(addedMixture);
+                return 1;
+            }
+        }else{
+            //TODO implement varaible mixture amount addition:eg from a tank or something that has a continuous amount
+        }
+        this.setChanged();
+        return 0;
+    }
+
+    public int getClickTimes() {
         return clickTimes;
     }
+
     @Override
-    public void saveAdditional(CompoundTag tag){
+    public void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        tag.putInt("clickTimes",clickTimes);
+        tag.putInt("clickTimes", clickTimes);
+        CompoundTag mixtureTag = new CompoundTag();
+        mixture.save(mixtureTag);
+        tag.put("mixture", mixtureTag);
     }
+
     @Override
-    public void load(CompoundTag tag){
+    public void load(CompoundTag tag) {
         super.load(tag);
+        CompoundTag contentTag = tag.getCompound("mixture");
+        mixture = new Mixture(contentTag);
         clickTimes = tag.getInt("clickTimes");
     }
 }
