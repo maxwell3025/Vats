@@ -2,6 +2,7 @@ package com.maxwell3025.vats;
 
 
 import com.maxwell3025.vats.api.Chemical;
+import com.maxwell3025.vats.content.CanisterItem;
 import com.maxwell3025.vats.content.VatBlock;
 import com.maxwell3025.vats.content.VatBlockEntity;
 import com.maxwell3025.vats.content.VatItem;
@@ -29,6 +30,7 @@ public class RegisterHandler {
     }
     public static void registerItems(IForgeRegistry<Item> register){
         register.register(new VatItem(VatBlocks.VAT, new Item.Properties()).setRegistryName("vat"));
+        register.register(new CanisterItem(new Item.Properties()).setRegistryName("canister"));
     }
     public static void registerBlockEntities(IForgeRegistry<BlockEntityType<?>> register){
         BlockEntityType<VatBlockEntity> vatBlockEntity = BlockEntityType.Builder.of(VatBlockEntity::new, VatBlocks.VAT).build(null);
