@@ -5,28 +5,30 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class CanisterItem extends Item {
-    public CanisterItem(Properties p_41383_) {
+    private static CanisterItem instance = null;
+    public static CanisterItem getInstance(){
+        if(instance == null){
+            instance = new CanisterItem(new Item.Properties().stacksTo(1));
+        }
+        return instance;
+    }
+    private CanisterItem(Properties p_41383_) {
         super(p_41383_);
     }
+
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
-        BlockEntity blockEntity = level.getBlockEntity(pos);
-        //check if clicked on vat
-        if(blockEntity instanceof VatBlockEntity vatEntity){
-
+        if(level.getBlockState(pos).is(ChemicalMixBlock.getInstance())){
+            return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
-    }
-
-    @Override
-    public int getItemStackLimit(ItemStack stack){
-        return 1;
     }
 }

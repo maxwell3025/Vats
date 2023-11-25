@@ -1,16 +1,11 @@
 package com.maxwell3025.vats;
 
-import com.maxwell3025.vats.api.Chemical;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Material;
+import com.maxwell3025.vats.content.chemEngine.ChemicalEventHandler;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraftforge.common.CreativeModeTabRegistry;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
@@ -20,14 +15,13 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.stream.Collectors;
-
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("vats")
 public class Vats
 {
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
+    public static final String MODID = "vats";
 
     public Vats() {
         // Register the setup method for modloading
@@ -39,6 +33,7 @@ public class Vats
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(ChemicalEventHandler.class);
     }
 
     private void setup(final FMLCommonSetupEvent event)
@@ -56,30 +51,8 @@ public class Vats
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
     }
+    @SubscribeEvent
+    public void addCreative(BuildCreativeModeTabContentsEvent event){
 
-    // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
-    // Event bus for receiving Registry Events)
-    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
-    public static class RegistryEvents {
-        @SubscribeEvent
-        public static void onNewRegistry(final RegistryEvent.NewRegistry newRegistryEvent) {
-            RegisterHandler.newRegister();
-        }
-        @SubscribeEvent
-        public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
-            RegisterHandler.registerBlocks(blockRegistryEvent.getRegistry());
-        }
-        @SubscribeEvent
-        public static void onItemsRegistry(final RegistryEvent.Register<Item> itemRegistryEvent) {
-            RegisterHandler.registerItems(itemRegistryEvent.getRegistry());
-        }
-        @SubscribeEvent
-        public static void onBlockEntitiesRegistry(final RegistryEvent.Register<BlockEntityType<?>> blockEntityRegistryEvent) {
-            RegisterHandler.registerBlockEntities(blockEntityRegistryEvent.getRegistry());
-        }
-        @SubscribeEvent
-        public static void onChemicalsRegistry(final RegistryEvent.Register<Chemical> chemicalRegistryEvent) {
-            RegisterHandler.registerChemicals(chemicalRegistryEvent.getRegistry());
-        }
     }
 }
