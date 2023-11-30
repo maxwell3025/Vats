@@ -76,6 +76,12 @@ public class ChunkChemicalData {
         chunk.setUnsaved(true);
         concentrations.values().forEach(blockChemicalData -> blockChemicalData.internalReaction(dt));
     }
+    public void diffuse(){
+        chunk.setUnsaved(true);
+        for(Map.Entry<BlockPos, BlockChemicalData> entry: concentrations.entrySet()){
+
+        }
+    }
 
     @Override
     public String toString() {

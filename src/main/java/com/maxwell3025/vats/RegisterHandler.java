@@ -1,4 +1,4 @@
-package com.maxwell3025.vats.api;
+package com.maxwell3025.vats;
 
 
 import com.maxwell3025.vats.api.Chemical;
@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,4 +31,11 @@ public class RegisterHandler {
     public static final RegistryObject<Item> CREATIVE_METER_ITEM = ITEMS.register("creative_meter", CreativeMeterItem::getInstance);
     public static final RegistryObject<CreativeModeTab> VATS_TAB = TABS.register("vats", VatsTab::getInstance);
     public static final RegistryObject<Chemical> WATER_CHEMICAL = CHEMICALS.register("water", WaterChemical::getInstance);
+
+    public static void register(){
+        BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        TABS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        CHEMICALS.register(FMLJavaModLoadingContext.get().getModEventBus());
+    }
 }

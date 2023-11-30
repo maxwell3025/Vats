@@ -1,8 +1,6 @@
 package com.maxwell3025.vats;
 
 import com.maxwell3025.vats.content.chemEngine.ChemicalEventHandler;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraftforge.common.CreativeModeTabRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -34,6 +32,7 @@ public class Vats
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(ChemicalEventHandler.class);
+        RegisterHandler.register();
     }
 
     private void setup(final FMLCommonSetupEvent event)

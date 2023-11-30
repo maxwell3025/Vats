@@ -1,20 +1,15 @@
 package com.maxwell3025.vats.content.chemEngine;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ChunkHolder;
-import net.minecraft.server.level.ChunkMap;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.block.FireBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.common.capabilities.*;
-import net.minecraftforge.common.ticket.ChunkTicketManager;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.world.ForgeChunkManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -33,7 +28,6 @@ import java.util.Set;
 
 public class ChemicalEventHandler {
     private static final Logger LOGGER = LogManager.getLogger();
-
     private static Map<ResourceKey<Level>, Set<ChunkPos>> loadedChunks = new HashMap<>();
     private static HashMap<ResourceKey<Level>, Integer> tickNumber = new HashMap<>();
     @SubscribeEvent
@@ -77,7 +71,10 @@ public class ChemicalEventHandler {
             tickNumber.put(dimension, tickNum);
             if(tickNum == 0) {
                 loadedChunks.getOrDefault(dimension, new HashSet<>()).forEach(chunkPos -> {
-                    LOGGER.warn("Chunk update at " + chunkPos.toString() + ", " + dimension);
+                    // LOGGER.warn("Chunk update at " + chunkPos.toString() + ", " + dimension);
+                    if(!event.level.hasChunk(chunkPos.x, chunkPos.z)){
+                        LOGGER.error("Nonexistent chunk cached");
+                    }
                     LevelChunk chunk = event.level.getChunkAt(chunkPos.getWorldPosition());
                     chunk.getCapability(CHEMICAL_CAPABILITY).ifPresent(data -> {
                         data.internalReaction(0.01);
@@ -90,15 +87,18 @@ public class ChemicalEventHandler {
     public static void onLoad(ChunkEvent.Load event){
         if(event.getLevel().isClientSide()) return;
         ResourceKey<Level> dimension = ((Level)event.getLevel()).dimension();
+
         Set<ChunkPos> levelSet = loadedChunks.computeIfAbsent(dimension, _key -> new HashSet<>());
         ChunkPos pos = event.getChunk().getPos();
         if(levelSet.contains(pos)){
             LOGGER.warn("Redundant load at " + pos);
         }
         levelSet.add(pos);
+        LOGGER.warn("# of chunks loaded: " + loadedChunks.get(dimension).size());
     }
     @SubscribeEvent
-    public static void onUnload(ChunkEvent.Unload event){
+    public static void onUnload(ChunkEvent.Unload  event){
+
         if(event.getLevel().isClientSide()) return;
         ResourceKey<Level> dimension = ((Level)event.getLevel()).dimension();
         Set<ChunkPos> levelSet = loadedChunks.get(dimension);
@@ -107,5 +107,6 @@ public class ChemicalEventHandler {
             LOGGER.warn("Illegal unload at " + pos);
         }
         levelSet.remove(event.getChunk().getPos());
+        LOGGER.warn("# of chunks loaded: " + loadedChunks.get(dimension).size());
     }
 }

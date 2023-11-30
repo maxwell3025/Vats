@@ -1,8 +1,6 @@
 package com.maxwell3025.vats.content;
 
-import com.maxwell3025.vats.holders.VatItems;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
 
 public class VatsTab extends CreativeModeTab {
     private static VatsTab instance;

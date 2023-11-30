@@ -1,7 +1,9 @@
 package com.maxwell3025.vats.content;
 
+import com.maxwell3025.vats.RegisterHandler;
 import com.maxwell3025.vats.content.chemEngine.ChunkChemicalData;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
@@ -33,10 +35,15 @@ public class CreativeMeterItem extends Item {
             LevelChunk chunk = context.getLevel().getChunk(clickedPos.getX() >> 4, clickedPos.getZ() >> 4);
             LazyOptional<ChunkChemicalData> chemicalDataProvider = chunk.getCapability(CHEMICAL_CAPABILITY);
             chemicalDataProvider.ifPresent(chemicalData -> {
-                LOGGER.warn(chemicalData.concentrations);
+                Component message = Component.literal(chemicalData.toString());
+                context.getPlayer().sendSystemMessage(Component.literal(context.isSecondaryUseActive() ? "secondary" : "primary"));
+                context.getPlayer().sendSystemMessage(message);
+                RegisterHandler.CHEMICAL_REGISTRY.get().getKeys().forEach(key -> {
+                    Component message_i = Component.literal(key.toString());
+                    context.getPlayer().sendSystemMessage(message_i);
+                });
             });
         }
-
         return InteractionResult.SUCCESS;
     }
 }
