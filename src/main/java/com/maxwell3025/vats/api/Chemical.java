@@ -4,4 +4,5 @@ public abstract class Chemical {
     public Chemical(){
 
     }
+    public abstract double getEntropy(double temperature);
 }

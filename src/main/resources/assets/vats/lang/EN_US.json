@@ -1,4 +1,5 @@
 {
   "block.vats.vat": "vat",
-  "item.vats.canister": "canister"
+  "item.vats.canister": "canister",
+  "itemGroup.vats": "vats"
 }

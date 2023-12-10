@@ -3,12 +3,13 @@ package com.maxwell3025.vats;
 
 import com.maxwell3025.vats.api.Chemical;
 import com.maxwell3025.vats.content.*;
-import com.maxwell3025.vats.content.chemicals.WaterChemical;
+import com.maxwell3025.vats.content.chemicals.LiquidWaterChemical;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.*;
 import org.apache.logging.log4j.LogManager;
@@ -23,6 +24,7 @@ public class RegisterHandler {
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     private static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
+    private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
     private static final DeferredRegister<Chemical> CHEMICALS = DeferredRegister.create(new ResourceLocation(MODID, "chemical"), MODID);
     public static final Supplier<IForgeRegistry<Chemical>> CHEMICAL_REGISTRY = CHEMICALS.makeRegistry(RegistryBuilder::new);
     public static final RegistryObject<Block> CHEMICAL_MIX_BLOCK = BLOCKS.register("chemical_mix", ChemicalMixBlock::getInstance);
@@ -30,12 +32,14 @@ public class RegisterHandler {
     public static final RegistryObject<Item> CANISTER_ITEM = ITEMS.register("canister", CanisterItem::getInstance);
     public static final RegistryObject<Item> CREATIVE_METER_ITEM = ITEMS.register("creative_meter", CreativeMeterItem::getInstance);
     public static final RegistryObject<CreativeModeTab> VATS_TAB = TABS.register("vats", VatsTab::getInstance);
-    public static final RegistryObject<Chemical> WATER_CHEMICAL = CHEMICALS.register("water", WaterChemical::getInstance);
+    public static final RegistryObject<BlockEntityType<ChemicalMixBlockEntity>> MY_BE = BLOCK_ENTITIES.register("chemical_mix", ChemicalMixBlockEntity::getTypeInstance);
+    public static final RegistryObject<Chemical> WATER_CHEMICAL = CHEMICALS.register("water", LiquidWaterChemical::getInstance);
 
     public static void register(){
         BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         TABS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        BLOCK_ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         CHEMICALS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 }

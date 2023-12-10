@@ -1,12 +1,12 @@
 package com.maxwell3025.vats.content;
 
 import com.maxwell3025.vats.RegisterHandler;
-import com.maxwell3025.vats.content.chemEngine.ChunkChemicalData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -18,31 +18,28 @@ import org.apache.logging.log4j.Logger;
 public class CreativeMeterItem extends Item {
     private static final Logger LOGGER = LogManager.getLogger();
     private static CreativeMeterItem instance = null;
-    public static CreativeMeterItem getInstance(){
-        if(instance == null){
+
+    public static CreativeMeterItem getInstance() {
+        if (instance == null) {
             instance = new CreativeMeterItem(new Item.Properties());
         }
         return instance;
     }
+
     public CreativeMeterItem(Properties properties) {
         super(properties);
     }
+
     @Override
-    public InteractionResult useOn(UseOnContext context){
-        Capability<ChunkChemicalData> CHEMICAL_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
-        if(!context.getLevel().isClientSide){
-            BlockPos clickedPos = context.getClickedPos();
-            LevelChunk chunk = context.getLevel().getChunk(clickedPos.getX() >> 4, clickedPos.getZ() >> 4);
-            LazyOptional<ChunkChemicalData> chemicalDataProvider = chunk.getCapability(CHEMICAL_CAPABILITY);
-            chemicalDataProvider.ifPresent(chemicalData -> {
-                Component message = Component.literal(chemicalData.toString());
-                context.getPlayer().sendSystemMessage(Component.literal(context.isSecondaryUseActive() ? "secondary" : "primary"));
-                context.getPlayer().sendSystemMessage(message);
-                RegisterHandler.CHEMICAL_REGISTRY.get().getKeys().forEach(key -> {
-                    Component message_i = Component.literal(key.toString());
-                    context.getPlayer().sendSystemMessage(message_i);
-                });
-            });
+    public InteractionResult useOn(UseOnContext context) {
+        BlockPos position = context.getClickedPos();
+        BlockEntity blockEntity = context.getLevel().getBlockEntity(position);
+        if (
+                blockEntity instanceof ChemicalMixBlockEntity chemicalMixBlockEntity &&
+                        !context.getLevel().isClientSide &&
+                        context.getPlayer() != null
+        ) {
+            context.getPlayer().sendSystemMessage(Component.literal("hello"));
         }
         return InteractionResult.SUCCESS;
     }
