@@ -52,6 +52,10 @@ public class ChemicalMixBlockEntity extends BlockEntity {
         return contents.scale(1);
     }
 
+    public void setContents(Mixture addedContents) {
+        contents = new Mixture(addedContents);
+    }
+
     public void addContents(Mixture addedContents) {
         contents = contents.add(addedContents);
     }
@@ -108,7 +112,6 @@ public class ChemicalMixBlockEntity extends BlockEntity {
         // Validate that tick is intended for this BlockEntity
         if (this.isRemoved()) {
             MinecraftForge.EVENT_BUS.unregister(this);
-            LOGGER.warn("Deregistered event bus");
             return;
         }
         if (tick.level != this.level) {
@@ -120,6 +123,8 @@ public class ChemicalMixBlockEntity extends BlockEntity {
         }
         assert this.level != null;
 
+        this.setChanged();
+
         int neighborCount = 0;
         for (Direction direction : Direction.values()) {
             if (getNeighbor(direction) != null) neighborCount++;
@@ -129,10 +134,12 @@ public class ChemicalMixBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(@NotNull CompoundTag tag) {
         super.saveAdditional(tag);
+        tag.put("contents", contents.serializeNBT());
     }
 
     @Override
     public void load(@NotNull CompoundTag tag) {
         super.load(tag);
+        contents = new Mixture(tag.getCompound("contents"));
     }
 }

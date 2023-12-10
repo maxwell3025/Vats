@@ -25,6 +25,8 @@ public class CanisterItem extends Item {
     private static final Logger LOGGER = LogManager.getLogger();
     private static CanisterItem instance = null;
 
+    public static final double CANISTER_MAXIMUM_CAPACITY = 1000;
+
     public static CanisterItem getInstance() {
         if (instance == null) {
             instance = new CanisterItem(new Item.Properties().stacksTo(1));
@@ -38,18 +40,19 @@ public class CanisterItem extends Item {
 
     @Override
     public int getMaxDamage(ItemStack stack) {
-        return 1000;
+        return 100;
     }
+
     @Override
-    public boolean isDamageable(ItemStack stack){
+    public boolean isDamageable(ItemStack stack) {
         return true;
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> currentToolTip, TooltipFlag flag) {
-        if(flag.isAdvanced()){
+        if (flag.isAdvanced()) {
             String[] tooltipMessage = getContents(stack).toString().split("\n");
-            for(String line: tooltipMessage){
+            for (String line : tooltipMessage) {
                 currentToolTip.add(Component.literal(line).withStyle(ChatFormatting.GRAY));
             }
         }
@@ -60,38 +63,58 @@ public class CanisterItem extends Item {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         if (level.getBlockEntity(pos) instanceof ChemicalMixBlockEntity blockEntity) {
+            blockEntity.setChanged();
             ItemStack canisterItemStack = context.getItemInHand();
             Mixture canisterContents = getContents(canisterItemStack);
             if (context.isSecondaryUseActive()) {
                 // Insert chemical if shifting
                 blockEntity.addContents(canisterContents);
-                if(context.getPlayer() == null || !context.getPlayer().isCreative()){
+                if (context.getPlayer() == null || !context.getPlayer().isCreative()) {
                     setContents(canisterItemStack, new Mixture());
                 }
             } else {
                 // Take chemical otherwise
+                Mixture originalBlockEntityContents = blockEntity.getContents();
+                double remainingCapacity = CANISTER_MAXIMUM_CAPACITY - canisterContents.getTotalAmount();
+                double blockEntityFillAmount = blockEntity.getContents().getTotalAmount();
+                Mixture transferredMix;
+                if(remainingCapacity >= blockEntityFillAmount){
+                    transferredMix = originalBlockEntityContents;
+                    blockEntity.setContents(new Mixture());
+                } else {
+                    double amountRemoved = Math.min(remainingCapacity, blockEntityFillAmount);
+                    double fractionRemoved = amountRemoved / blockEntityFillAmount;
+                    transferredMix = blockEntity.getContents().scale(fractionRemoved);
+                    blockEntity.setContents(blockEntity.getContents().sub(transferredMix));
+                }
+
+                if (context.getPlayer() == null || !context.getPlayer().isCreative()) {
+                    setContents(canisterItemStack, canisterContents.add(transferredMix));
+                }
             }
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
     }
-    public static void setContents(ItemStack canisterItemStack, Mixture contents){
-        if(canisterItemStack.getItem() != getInstance()){
+
+    public static void setContents(ItemStack canisterItemStack, Mixture contents) {
+        if (canisterItemStack.getItem() != getInstance()) {
             LOGGER.error("Attempted to set chemical contents of non-canister item stack");
             return;
         }
         double totalAmount = contents.getTotalAmount();
-        if(totalAmount > 1000){
+        if (totalAmount > CANISTER_MAXIMUM_CAPACITY) {
             LOGGER.error("Attempted to set chemical contents of canister item stack to more than it's capacity");
             return;
         }
-        canisterItemStack.setDamageValue(1000 - (int)Math.floor(totalAmount));
+        canisterItemStack.setDamageValue(100 - (int) Math.floor(totalAmount / CANISTER_MAXIMUM_CAPACITY * 100));
         CompoundTag itemStackTag = canisterItemStack.getOrCreateTag();
         itemStackTag.put("contents", contents.serializeNBT());
         canisterItemStack.setTag(itemStackTag);
     }
-    public static Mixture getContents(ItemStack canisterItemStack){
-        if(canisterItemStack.getItem() != getInstance()){
+
+    public static Mixture getContents(ItemStack canisterItemStack) {
+        if (canisterItemStack.getItem() != getInstance()) {
             LOGGER.error("Attempted to get chemical contents of non-canister item stack");
             return new Mixture();
         }
@@ -99,7 +122,8 @@ public class CanisterItem extends Item {
         CompoundTag contentsTag = itemStackTag.getCompound("contents");
         return new Mixture(contentsTag);
     }
-    public static ItemStack makeCanister(Mixture contents){
+
+    public static ItemStack makeCanister(Mixture contents) {
         ItemStack canisterItemStack = new ItemStack(CanisterItem.getInstance());
         setContents(canisterItemStack, contents);
         return canisterItemStack;

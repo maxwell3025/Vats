@@ -60,6 +60,10 @@ public class Mixture{
         return out;
     }
 
+    public Mixture sub(Mixture rhs){
+        return add(rhs.scale(-1));
+    }
+
     public String toString(){
         StringBuilder out = new StringBuilder();
         out.append("Mixture {\n");
