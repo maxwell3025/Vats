@@ -10,6 +10,20 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
 public class ChemicalReaction implements Recipe<Container> {
+    private static RecipeType<ChemicalReaction> typeInstance = null;
+
+    public static RecipeType<ChemicalReaction> getTypeInstance() {
+        if (typeInstance == null) {
+            typeInstance = new RecipeType<ChemicalReaction>() {
+                @Override
+                public String toString() {
+                    return "reaction";
+                }
+            };
+        }
+        return typeInstance;
+    }
+
     protected final ResourceLocation id;
 
     public ChemicalReaction(ResourceLocation id) {
@@ -47,7 +61,7 @@ public class ChemicalReaction implements Recipe<Container> {
     }
 
     @Override
-    public RecipeType<?> getType() {
-        return null;
+    public RecipeType<ChemicalReaction> getType() {
+        return getTypeInstance();
     }
 }
