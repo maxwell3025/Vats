@@ -1,5 +1,5 @@
 {
-  "block.vats.vat": "vat",
-  "item.vats.canister": "canister",
-  "itemGroup.vats": "vats"
+  "item.vats.canister": "Canister",
+  "item.vats.creative_meter": "Creative Meter",
+  "itemGroup.vats": "Vats"
 }
