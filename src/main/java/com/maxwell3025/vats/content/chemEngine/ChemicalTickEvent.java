@@ -1,8 +1,6 @@
 package com.maxwell3025.vats.content.chemEngine;
 
-import com.maxwell3025.vats.content.ChemicalMixBlockEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.Event;

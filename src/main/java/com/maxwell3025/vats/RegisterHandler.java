@@ -5,7 +5,10 @@ import com.maxwell3025.vats.api.Chemical;
 import com.maxwell3025.vats.api.ChemicalReaction;
 import com.maxwell3025.vats.api.ChemicalReactionSerializer;
 import com.maxwell3025.vats.content.*;
-import com.maxwell3025.vats.content.chemicals.LiquidWaterChemical;
+import com.maxwell3025.vats.content.chemicals.ChlorineGasChemical;
+import com.maxwell3025.vats.content.chemicals.HydrogenChlorideGasChemical;
+import com.maxwell3025.vats.content.chemicals.HydrogenGasChemical;
+import com.maxwell3025.vats.content.chemicals.WaterLiquidChemical;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -41,7 +44,10 @@ public class RegisterHandler {
     public static final RegistryObject<BlockEntityType<ChemicalMixBlockEntity>> MY_BE = BLOCK_ENTITIES.register("chemical_mix", ChemicalMixBlockEntity::getTypeInstance);
     public static final RegistryObject<RecipeType<ChemicalReaction>> CHEMICAL_REACTION = RECIPE_TYPES.register("reaction", ChemicalReaction::getTypeInstance);
     public static final RegistryObject<RecipeSerializer<ChemicalReaction>> CHEMICAL_REACTION_SERIALIZER = RECIPE_SERIALIZERS.register("reaction", ChemicalReactionSerializer::getInstance);
-    public static final RegistryObject<Chemical> WATER_CHEMICAL = CHEMICALS.register("water", LiquidWaterChemical::getInstance);
+    public static final RegistryObject<Chemical> WATER_LIQUID_CHEMICAL = CHEMICALS.register("water_liquid", WaterLiquidChemical::getInstance);
+    public static final RegistryObject<Chemical> CHLORINE_GAS_CHEMICAL = CHEMICALS.register("chlorine_gas", ChlorineGasChemical::getInstance);
+    public static final RegistryObject<Chemical> HYDROGEN_GAS_CHEMICAL = CHEMICALS.register("hydrogen_gas", HydrogenGasChemical::getInstance);
+    public static final RegistryObject<Chemical> HYDROGEN_CHLORIDE_GAS_CHEMICAL = CHEMICALS.register("hydrogen_chloride_gas", HydrogenChlorideGasChemical::getInstance);
 
     public static void register(){
         BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());

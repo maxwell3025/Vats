@@ -39,7 +39,7 @@ public class CreativeMeterItem extends Item {
                         !context.getLevel().isClientSide &&
                         context.getPlayer() != null
         ) {
-            context.getPlayer().sendSystemMessage(Component.literal("hello"));
+            context.getPlayer().sendSystemMessage(Component.literal(chemicalMixBlockEntity.getReactionList().toString()));
         }
         return InteractionResult.SUCCESS;
     }

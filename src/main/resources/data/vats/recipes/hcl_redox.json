@@ -1,6 +1,11 @@
 {
   "type": "vats:reaction",
-  "input": {},
-  "data": 0,
-  "output": {}
+  "input": {
+    "vats:chlorine_gas": 1,
+    "vats:hydrogen_gas": 1
+  },
+  "rate": 10,
+  "output": {
+    "vats:hydrogen_chloride_gas": 2
+  }
 }

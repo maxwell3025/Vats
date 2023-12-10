@@ -14,6 +14,11 @@ public class HydrogenChlorideGasChemical extends Chemical {
     public double getEntropy(double temperature) {
         return 0;
     }
+
+    @Override
+    public String toFormulaString() {
+        return "HCl";
+    }
     private HydrogenChlorideGasChemical(){
         super();
     }

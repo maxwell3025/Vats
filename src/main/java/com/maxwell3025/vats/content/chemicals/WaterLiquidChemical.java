@@ -2,14 +2,18 @@ package com.maxwell3025.vats.content.chemicals;
 
 import com.maxwell3025.vats.api.Chemical;
 
-public class ChlorineGasChemical extends Chemical {
-    private static ChlorineGasChemical instance;
-    public static ChlorineGasChemical getInstance(){
+public class WaterLiquidChemical extends Chemical {
+    private static WaterLiquidChemical instance = null;
+    public static WaterLiquidChemical getInstance(){
         if(instance == null){
-            instance = new ChlorineGasChemical();
+            instance = new WaterLiquidChemical();
         }
         return instance;
     }
+    private WaterLiquidChemical(){
+        super();
+    }
+
     @Override
     public double getEntropy(double temperature) {
         return 0;
@@ -17,10 +21,6 @@ public class ChlorineGasChemical extends Chemical {
 
     @Override
     public String toFormulaString() {
-        return "Cl2";
-    }
-
-    private ChlorineGasChemical(){
-        super();
+        return "H2O";
     }
 }

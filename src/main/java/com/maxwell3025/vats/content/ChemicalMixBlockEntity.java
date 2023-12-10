@@ -1,33 +1,36 @@
 package com.maxwell3025.vats.content;
 
+import com.maxwell3025.vats.api.ChemicalReaction;
 import com.maxwell3025.vats.api.Mixture;
 import com.maxwell3025.vats.content.chemEngine.ChemicalTickEvent;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.jmx.Server;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NonBlocking;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
+import java.util.List;
 
 public class ChemicalMixBlockEntity extends BlockEntity {
     private static final Logger LOGGER = LogManager.getLogger();
     int time = 0;
     private static BlockEntityType<ChemicalMixBlockEntity> typeInstance = null;
+    private static List<ChemicalReaction> reactionList = null;
     private float heat;
     private Mixture contents;
 
@@ -43,7 +46,21 @@ public class ChemicalMixBlockEntity extends BlockEntity {
         state.getBlock();
         MinecraftForge.EVENT_BUS.register(this);
     }
+    @NonNull
+    public List<ChemicalReaction> getReactionList(){
+        assert level != null;
+        if(reactionList == null){
+            reactionList = this.level.getRecipeManager().getAllRecipesFor(ChemicalReaction.getTypeInstance());
+        }
+        return reactionList;
+    }
 
+    /**
+     * Retrieves the chemical mix adjacent in the given direction
+     * @param direction the direction of the neighbor
+     * @return The adjacent ChemicalMixBlockEntity, or null if it does not exist
+     */
+    @Nullable
     public ChemicalMixBlockEntity getNeighbor(Direction direction) {
         assert this.level != null;
         BlockPos neighborPos = this.worldPosition.relative(direction);
@@ -97,7 +114,6 @@ public class ChemicalMixBlockEntity extends BlockEntity {
         for (Direction direction : Direction.values()) {
             if (getNeighbor(direction) != null) neighborCount++;
         }
-        LOGGER.warn((this.level.isClientSide() ? "Client" : "Server") + " Found " + neighborCount + " neighbors");
     }
 
     @Override

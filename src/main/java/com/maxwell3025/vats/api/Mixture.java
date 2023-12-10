@@ -2,12 +2,17 @@ package com.maxwell3025.vats.api;
 
 import com.maxwell3025.vats.RegisterHandler;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This is a concrete mixture of chemicals with no defined size.
+ * For the most part, this is just a data class with some utilities.
+ */
 public class Mixture {
     private static final Logger LOGGER = LogManager.getLogger();
     private Map<String, Double> components = new HashMap<>();
@@ -17,14 +22,16 @@ public class Mixture {
         this.components = new HashMap<>(other.components);
     }
     public Mixture(Chemical chemical, double amount) {
-        String registryKey = RegisterHandler.CHEMICAL_REGISTRY.get().getKey(chemical).getPath();
-        components.put(registryKey, amount);
+        components.put(chemical.getRegistryName(), amount);
     }
 
     public Mixture(CompoundTag tag) {
         for (String key : tag.getAllKeys()) {
             components.put(key, tag.getDouble(key));
         }
+    }
+    public double getAmount(Chemical chemical){
+        return components.getOrDefault(chemical.getRegistryName(), 0.0);
     }
     public Mixture scale(double rhs){
         Mixture out = new Mixture();
