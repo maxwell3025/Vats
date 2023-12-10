@@ -32,7 +32,8 @@ public class ChemicalMixBlockEntity extends BlockEntity {
     private static BlockEntityType<ChemicalMixBlockEntity> typeInstance = null;
     private static List<ChemicalReaction> reactionList = null;
     private float heat;
-    private Mixture contents;
+    @NonNull
+    private Mixture contents = new Mixture();
 
     public static BlockEntityType<ChemicalMixBlockEntity> getTypeInstance() {
         if (typeInstance == null) {
@@ -46,6 +47,15 @@ public class ChemicalMixBlockEntity extends BlockEntity {
         state.getBlock();
         MinecraftForge.EVENT_BUS.register(this);
     }
+
+    public Mixture getContents() {
+        return contents.scale(1);
+    }
+
+    public void addContents(Mixture addedContents) {
+        contents = contents.add(addedContents);
+    }
+
     @NonNull
     public List<ChemicalReaction> getReactionList(){
         assert level != null;

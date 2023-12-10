@@ -7,8 +7,12 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class Chemical {
     private static final Logger LOGGER = LogManager.getLogger();
+
     public Chemical(){
 
+    }
+    public static Chemical fromRegistryName(String key){
+        return fromRegistryName(new ResourceLocation(key));
     }
     public static Chemical fromRegistryName(ResourceLocation key){
         return RegisterHandler.CHEMICAL_REGISTRY.get().getValue(key);
@@ -20,7 +24,7 @@ public abstract class Chemical {
                     "meaning that it was likely not loaded properly. Please contact the mod developer");
             return "";
         }
-        return key.getPath();
+        return key.toString();
     }
     public abstract double getEntropy(double temperature);
 
