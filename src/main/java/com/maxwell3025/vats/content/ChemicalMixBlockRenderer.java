@@ -24,7 +24,6 @@ public class ChemicalMixBlockRenderer implements BlockEntityRenderer<ChemicalMix
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.debugQuads());
         Matrix4f matrix4f = poseStack.last().pose();
         Vector4fc color = blockEntity.getColor();
-        LOGGER.warn("Rendering Block Entity: {}", color.toString());
         float r = color.x();
         float g = color.y();
         float b = color.z();

@@ -92,6 +92,7 @@ public class CanisterItem extends Item {
                     setContents(canisterItemStack, canisterContents.add(transferredMix));
                 }
             }
+            level.sendBlockUpdated(pos, level.getBlockState(pos), level.getBlockState(pos), 2);
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;

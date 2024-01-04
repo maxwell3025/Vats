@@ -8,6 +8,10 @@ import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
@@ -184,5 +188,19 @@ public class ChemicalMixBlockEntity extends BlockEntity {
     public void load(@NotNull CompoundTag tag) {
         super.load(tag);
         contents = new Mixture(tag.getCompound("contents"));
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        LOGGER.warn("getUpdateTag");
+        CompoundTag tag = super.getUpdateTag();
+        saveAdditional(tag);
+        return tag;
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 }
