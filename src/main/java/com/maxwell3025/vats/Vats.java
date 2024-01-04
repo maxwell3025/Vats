@@ -1,6 +1,9 @@
 package com.maxwell3025.vats;
 
+import com.maxwell3025.vats.content.ChemicalMixBlockEntity;
+import com.maxwell3025.vats.content.ChemicalMixBlockRenderer;
 import com.maxwell3025.vats.content.chemEngine.ChemicalTickEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -30,8 +33,8 @@ public class Vats
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
 
         // Register ourselves for server and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(ChemicalTickEvent.class);
+        FMLJavaModLoadingContext.get().getModEventBus().register(new RegistrationEventHandler());
         RegisterHandler.register();
     }
 
@@ -45,13 +48,5 @@ public class Vats
 
     private void processIMC(final InterModProcessEvent event)
     {
-    }
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
-    }
-    @SubscribeEvent
-    public void addCreative(BuildCreativeModeTabContentsEvent event){
-
     }
 }
