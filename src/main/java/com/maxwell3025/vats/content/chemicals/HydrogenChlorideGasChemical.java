@@ -22,4 +22,19 @@ public class HydrogenChlorideGasChemical extends Chemical {
     private HydrogenChlorideGasChemical(){
         super();
     }
+
+    @Override
+    public double getHeatCapacity() {
+        return 30;
+    }
+
+    @Override
+    public double getStandardEntropy() {
+        return 0;
+    }
+
+    @Override
+    public double getStandardEnthalpy() {
+        return -92300;
+    }
 }

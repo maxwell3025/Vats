@@ -15,14 +15,17 @@ import java.util.Map;
  * This is a concrete mixture of chemicals with no defined size.
  * For the most part, this is just a data class with some utilities.
  */
-public class Mixture{
+public class Mixture {
     private static final Logger LOGGER = LogManager.getLogger();
     private Map<Chemical, Double> components = new HashMap<>();
 
-    public Mixture() {}
+    public Mixture() {
+    }
+
     public Mixture(Mixture other) {
         this.components = new HashMap<>(other.components);
     }
+
     public Mixture(Chemical chemical, double amount) {
         components.put(chemical, amount);
     }
@@ -32,17 +35,20 @@ public class Mixture{
             components.put(Chemical.fromRegistryName(key), tag.getDouble(key));
         }
     }
-    public double getAmount(Chemical chemical){
+
+    public double getAmount(Chemical chemical) {
         return components.getOrDefault(chemical, 0.0);
     }
-    public double getTotalAmount(){
+
+    public double getTotalAmount() {
         double totalAmount = 0;
-        for(double amount: components.values()){
+        for (double amount : components.values()) {
             totalAmount += amount;
         }
         return totalAmount;
     }
-    public Mixture scale(double rhs){
+
+    public Mixture scale(double rhs) {
         Mixture out = new Mixture();
         for (Map.Entry<Chemical, Double> pair : this.components.entrySet()) {
             double currentAmount = pair.getValue();
@@ -50,24 +56,25 @@ public class Mixture{
         }
         return out;
     }
-    public Mixture add(Mixture rhs){
+
+    public Mixture add(Mixture rhs) {
         Mixture out = new Mixture(this);
         for (Map.Entry<Chemical, Double> pair : rhs.components.entrySet()) {
             double currentAmount = out.components.getOrDefault(pair.getKey(), 0.0);
             double addedAmount = rhs.components.get(pair.getKey());
-            out.components.put(pair.getKey(), currentAmount+addedAmount);
+            out.components.put(pair.getKey(), currentAmount + addedAmount);
         }
         return out;
     }
 
-    public Mixture sub(Mixture rhs){
+    public Mixture sub(Mixture rhs) {
         return add(rhs.scale(-1));
     }
 
-    public String toString(){
+    public String toString() {
         StringBuilder out = new StringBuilder();
         out.append("Mixture {\n");
-        for(Map.Entry<Chemical, Double> pair : components.entrySet()){
+        for (Map.Entry<Chemical, Double> pair : components.entrySet()) {
             out.append(String.format("    %8.3f mol %s\n", pair.getValue(), pair.getKey().toFormulaString()));
         }
         out.append("}\n");

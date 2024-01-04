@@ -15,6 +15,21 @@ public class WaterLiquidChemical extends Chemical {
     }
 
     @Override
+    public double getHeatCapacity() {
+        return 75;
+    }
+
+    @Override
+    public double getStandardEntropy() {
+        return 0;
+    }
+
+    @Override
+    public double getStandardEnthalpy() {
+        return -286000;
+    }
+
+    @Override
     public double getEntropy(double temperature) {
         return 0;
     }

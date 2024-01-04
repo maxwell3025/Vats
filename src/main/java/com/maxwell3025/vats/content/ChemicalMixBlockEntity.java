@@ -1,5 +1,6 @@
 package com.maxwell3025.vats.content;
 
+import com.maxwell3025.vats.api.Chemical;
 import com.maxwell3025.vats.api.ChemicalReaction;
 import com.maxwell3025.vats.api.Mixture;
 import com.maxwell3025.vats.content.chemEngine.ChemicalTickEvent;
@@ -23,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 
 public class ChemicalMixBlockEntity extends BlockEntity {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -30,6 +32,7 @@ public class ChemicalMixBlockEntity extends BlockEntity {
     private static BlockEntityType<ChemicalMixBlockEntity> typeInstance = null;
     private static List<ChemicalReaction> reactionList = null;
     private float heat;
+    private static final double BLOCK_VOLUME = 1000;
     @NonNull
     private Mixture contents = new Mixture();
 
@@ -126,6 +129,24 @@ public class ChemicalMixBlockEntity extends BlockEntity {
         int neighborCount = 0;
         for (Direction direction : Direction.values()) {
             if (getNeighbor(direction) != null) neighborCount++;
+        }
+        // TODO tick internals
+        for(ChemicalReaction reaction: this.getReactionList()){
+            Map<Chemical, Integer> inputs = reaction.getInputs();
+            Map<Chemical, Integer> outputs = reaction.getOutputs();
+            double inputProduct = 1;
+            for(Map.Entry<Chemical, Integer> inputEntry: inputs.entrySet()){
+                Chemical chemical = inputEntry.getKey();
+                int coefficient = inputEntry.getValue();
+                double concentration = this.contents.getAmount(chemical) / BLOCK_VOLUME;
+                inputProduct *= Math.pow(concentration, coefficient);
+            }
+            double rate = inputProduct * reaction.getRateConstant();
+            double dt = 0.05;
+            //TODO implement backwards reaction
+
+            this.contents = this.contents.add(reaction.getMolOutput().scale(rate * dt));
+            this.contents = this.contents.sub(reaction.getMolInput().scale(rate * dt));
         }
     }
 

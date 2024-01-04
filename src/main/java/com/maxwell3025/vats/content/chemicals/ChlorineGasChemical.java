@@ -23,4 +23,19 @@ public class ChlorineGasChemical extends Chemical {
     private ChlorineGasChemical(){
         super();
     }
+
+    @Override
+    public double getHeatCapacity() {
+        return 30;
+    }
+
+    @Override
+    public double getStandardEntropy() {
+        return 0;
+    }
+
+    @Override
+    public double getStandardEnthalpy() {
+        return 0;
+    }
 }
