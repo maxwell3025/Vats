@@ -11,6 +11,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Matrix4f;
+import org.joml.Vector4fc;
 
 @OnlyIn(Dist.CLIENT)
 public class ChemicalMixBlockRenderer implements BlockEntityRenderer<ChemicalMixBlockEntity> {
@@ -19,15 +20,49 @@ public class ChemicalMixBlockRenderer implements BlockEntityRenderer<ChemicalMix
     }
     @Override
     public void render(ChemicalMixBlockEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        LOGGER.warn("Rendering");
         poseStack.pushPose();
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.debugQuads());
         Matrix4f matrix4f = poseStack.last().pose();
+        Vector4fc color = blockEntity.getColor();
+        LOGGER.warn("Rendering Block Entity: {}", color.toString());
+        float r = color.x();
+        float g = color.y();
+        float b = color.z();
+        float a = color.w();
 
-        consumer.vertex(matrix4f, 0, 0, 0).color(0.9F, 0.9F, 0.0F, 1.0F).endVertex();
-        consumer.vertex(matrix4f, 1, 0, 0).color(0.9F, 0.9F, 0.0F, 1.0F).endVertex();
-        consumer.vertex(matrix4f, 1, 0, 1).color(0.9F, 0.9F, 0.0F, 1.0F).endVertex();
-        consumer.vertex(matrix4f, 0, 0, 1).color(0.9F, 0.9F, 0.0F, 1.0F).endVertex();
+        addVertex(consumer, matrix4f, 0.01f, 0.99f, 0.99f, r, g, b, a, 0, 1, 0, combinedLight);
+        addVertex(consumer, matrix4f, 0.99f, 0.99f, 0.99f, r, g, b, a, 0, 1, 0, combinedLight);
+        addVertex(consumer, matrix4f, 0.99f, 0.99f, 0.01f, r, g, b, a, 0, 1, 0, combinedLight);
+        addVertex(consumer, matrix4f, 0.01f, 0.99f, 0.01f, r, g, b, a, 0, 1, 0, combinedLight);
+
+        addVertex(consumer, matrix4f, 0.01f, 0.01f, 0.01f, r, g, b, a, 0, -1, 0, combinedLight);
+        addVertex(consumer, matrix4f, 0.99f, 0.01f, 0.01f, r, g, b, a, 0, -1, 0, combinedLight);
+        addVertex(consumer, matrix4f, 0.99f, 0.01f, 0.99f, r, g, b, a, 0, -1, 0, combinedLight);
+        addVertex(consumer, matrix4f, 0.01f, 0.01f, 0.99f, r, g, b, a, 0, -1, 0, combinedLight);
+
+        addVertex(consumer, matrix4f, 0.01f, 0.01f, 0.99f, r, g, b, a, 0, 0, 1, combinedLight);
+        addVertex(consumer, matrix4f, 0.99f, 0.01f, 0.99f, r, g, b, a, 0, 0, 1, combinedLight);
+        addVertex(consumer, matrix4f, 0.99f, 0.99f, 0.99f, r, g, b, a, 0, 0, 1, combinedLight);
+        addVertex(consumer, matrix4f, 0.01f, 0.99f, 0.99f, r, g, b, a, 0, 0, 1, combinedLight);
+
+        addVertex(consumer, matrix4f, 0.01f, 0.99f, 0.01f, r, g, b, a, 0, 0, -1, combinedLight);
+        addVertex(consumer, matrix4f, 0.99f, 0.99f, 0.01f, r, g, b, a, 0, 0, -1, combinedLight);
+        addVertex(consumer, matrix4f, 0.99f, 0.01f, 0.01f, r, g, b, a, 0, 0, -1, combinedLight);
+        addVertex(consumer, matrix4f, 0.01f, 0.01f, 0.01f, r, g, b, a, 0, 0, -1, combinedLight);
+
+        addVertex(consumer, matrix4f, 0.99f, 0.01f, 0.01f, r, g, b, a, 1, 0, 0, combinedLight);
+        addVertex(consumer, matrix4f, 0.99f, 0.99f, 0.01f, r, g, b, a, 1, 0, 0, combinedLight);
+        addVertex(consumer, matrix4f, 0.99f, 0.99f, 0.99f, r, g, b, a, 1, 0, 0, combinedLight);
+        addVertex(consumer, matrix4f, 0.99f, 0.01f, 0.99f, r, g, b, a, 1, 0, 0, combinedLight);
+
+        addVertex(consumer, matrix4f, 0.01f, 0.01f, 0.99f, r, g, b, a, -1, 0, 0, combinedLight);
+        addVertex(consumer, matrix4f, 0.01f, 0.99f, 0.99f, r, g, b, a, -1, 0, 0, combinedLight);
+        addVertex(consumer, matrix4f, 0.01f, 0.99f, 0.01f, r, g, b, a, -1, 0, 0, combinedLight);
+        addVertex(consumer, matrix4f, 0.01f, 0.01f, 0.01f, r, g, b, a, -1, 0, 0, combinedLight);
+
         poseStack.popPose();
+    }
+    private void addVertex(VertexConsumer consumer, Matrix4f matrix4f, float x, float y, float z, float r, float g, float b, float a, float nx, float ny, float nz, int combinedLight){
+        consumer.vertex(matrix4f, x, y, z).color(r, g, b, a).uv(0, 0).uv2(combinedLight).normal(nx, ny, nz).endVertex();
     }
 }

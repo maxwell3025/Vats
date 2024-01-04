@@ -1,6 +1,8 @@
 package com.maxwell3025.vats.content.chemicals;
 
 import com.maxwell3025.vats.api.Chemical;
+import org.joml.Vector4f;
+import org.joml.Vector4fc;
 
 public class HydrogenGasChemical extends Chemical {
     private static HydrogenGasChemical instance = null;
@@ -13,6 +15,11 @@ public class HydrogenGasChemical extends Chemical {
     @Override
     public double getEntropy(double temperature) {
         return 0;
+    }
+
+    @Override
+    public Vector4fc getColor() {
+        return new Vector4f(0.0f);
     }
 
     @Override

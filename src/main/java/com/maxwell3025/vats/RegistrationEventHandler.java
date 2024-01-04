@@ -14,7 +14,6 @@ public class RegistrationEventHandler {
     private static final Logger LOGGER = LogManager.getLogger();
     @SubscribeEvent
     public void subscribeBER(EntityRenderersEvent.RegisterRenderers event){
-        LOGGER.warn("Block Entity Renderer Registration");
         event.registerBlockEntityRenderer(ChemicalMixBlockEntity.getTypeInstance(), ChemicalMixBlockRenderer::new);
     }
 }

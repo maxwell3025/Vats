@@ -4,6 +4,7 @@ import com.maxwell3025.vats.RegisterHandler;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joml.Vector4fc;
 
 public abstract class Chemical {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -59,6 +60,8 @@ public abstract class Chemical {
     public double getEnergy(double temperature){
         return getStandardEnthalpy() + getHeatCapacity() * temperature;
     }
+
+    public abstract Vector4fc getColor();
 
     public abstract String toFormulaString();
 }

@@ -4,6 +4,7 @@ import com.maxwell3025.vats.api.Chemical;
 import com.maxwell3025.vats.api.ChemicalReaction;
 import com.maxwell3025.vats.api.Mixture;
 import com.maxwell3025.vats.content.chemEngine.ChemicalTickEvent;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -22,6 +23,9 @@ import org.apache.logging.log4j.Logger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
+import org.joml.Vector4fc;
 
 import java.util.List;
 import java.util.Map;
@@ -62,9 +66,9 @@ public class ChemicalMixBlockEntity extends BlockEntity {
     }
 
     @NonNull
-    public List<ChemicalReaction> getReactionList(){
+    public List<ChemicalReaction> getReactionList() {
         assert level != null;
-        if(reactionList == null){
+        if (reactionList == null) {
             reactionList = this.level.getRecipeManager().getAllRecipesFor(ChemicalReaction.getTypeInstance());
         }
         return reactionList;
@@ -72,6 +76,7 @@ public class ChemicalMixBlockEntity extends BlockEntity {
 
     /**
      * Retrieves the chemical mix adjacent in the given direction
+     *
      * @param direction the direction of the neighbor
      * @return The adjacent ChemicalMixBlockEntity, or null if it does not exist
      */
@@ -90,22 +95,41 @@ public class ChemicalMixBlockEntity extends BlockEntity {
     /**
      * This returns true iff this instance should process chemistry ticks
      */
-    public boolean shouldTick(){
+    public boolean shouldTick() {
         if (!this.hasLevel()) {
             LOGGER.error("ChemicalMixBlockEntity should always have a level");
             return false;
         }
         assert this.level != null;
-        if(!this.level.isClientSide) {
+        if (!this.level.isClientSide) {
             ChunkAccess chunkAccess = this.level.getChunk(this.worldPosition);
-            if(chunkAccess instanceof LevelChunk levelChunk){
+            if (chunkAccess instanceof LevelChunk levelChunk) {
                 ServerLevel serverLevel = ((ServerLevel) levelChunk.getLevel());
                 boolean validStatus = levelChunk.getFullStatus().isOrAfter(FullChunkStatus.BLOCK_TICKING);
                 boolean loadedProperly = serverLevel.areEntitiesLoaded(ChunkPos.asLong(this.worldPosition));
                 return validStatus && loadedProperly;
             }
         }
-        return false;
+        return true;
+    }
+
+    public Vector4fc getColor() {
+        Vector3f totalColor = new Vector3f();
+        float absorbance = 0;
+        for (Map.Entry<Chemical, Double> entry : this.contents.getComponents().entrySet()) {
+            Chemical chemical = entry.getKey();
+            double concentration = entry.getValue() / BLOCK_VOLUME;
+            Vector4fc defaultColor = chemical.getColor();
+            Vector3f defaultOpaqueColor = new Vector3f(defaultColor.x(), defaultColor.y(), defaultColor.z());
+            totalColor = totalColor.add(defaultOpaqueColor.mul((float) concentration));
+            absorbance += (float) (chemical.getColor().w() * concentration);
+        }
+        if(absorbance < 0.001f){
+            return new Vector4f(0);
+        }
+        Vector3f averageColor = totalColor.div(absorbance);
+        float opacity = (float)(1.0 - Math.exp(-absorbance));
+        return new Vector4f(averageColor, opacity);
     }
 
     @SubscribeEvent
@@ -131,11 +155,11 @@ public class ChemicalMixBlockEntity extends BlockEntity {
             if (getNeighbor(direction) != null) neighborCount++;
         }
         // TODO tick internals
-        for(ChemicalReaction reaction: this.getReactionList()){
+        for (ChemicalReaction reaction : this.getReactionList()) {
             Map<Chemical, Integer> inputs = reaction.getInputs();
             Map<Chemical, Integer> outputs = reaction.getOutputs();
             double inputProduct = 1;
-            for(Map.Entry<Chemical, Integer> inputEntry: inputs.entrySet()){
+            for (Map.Entry<Chemical, Integer> inputEntry : inputs.entrySet()) {
                 Chemical chemical = inputEntry.getKey();
                 int coefficient = inputEntry.getValue();
                 double concentration = this.contents.getAmount(chemical) / BLOCK_VOLUME;

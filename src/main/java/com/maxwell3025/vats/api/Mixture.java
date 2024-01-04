@@ -1,6 +1,7 @@
 package com.maxwell3025.vats.api;
 
 import com.maxwell3025.vats.RegisterHandler;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMaps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -20,6 +21,10 @@ public class Mixture {
     private Map<Chemical, Double> components = new HashMap<>();
 
     public Mixture() {
+    }
+
+    public Map<Chemical, Double> getComponents(){
+        return new HashMap<>(this.components);
     }
 
     public Mixture(Mixture other) {

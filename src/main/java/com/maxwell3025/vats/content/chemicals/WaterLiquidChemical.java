@@ -1,16 +1,20 @@
 package com.maxwell3025.vats.content.chemicals;
 
 import com.maxwell3025.vats.api.Chemical;
+import org.joml.Vector4f;
+import org.joml.Vector4fc;
 
 public class WaterLiquidChemical extends Chemical {
     private static WaterLiquidChemical instance = null;
-    public static WaterLiquidChemical getInstance(){
-        if(instance == null){
+
+    public static WaterLiquidChemical getInstance() {
+        if (instance == null) {
             instance = new WaterLiquidChemical();
         }
         return instance;
     }
-    private WaterLiquidChemical(){
+
+    private WaterLiquidChemical() {
         super();
     }
 
@@ -32,6 +36,11 @@ public class WaterLiquidChemical extends Chemical {
     @Override
     public double getEntropy(double temperature) {
         return 0;
+    }
+
+    @Override
+    public Vector4fc getColor() {
+        return new Vector4f(0, 0.5f, 1, 0.5f);
     }
 
     @Override
