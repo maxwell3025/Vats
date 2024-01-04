@@ -5,6 +5,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
@@ -55,6 +56,7 @@ public class CanisterItem extends Item {
             for (String line : tooltipMessage) {
                 currentToolTip.add(Component.literal(line).withStyle(ChatFormatting.GRAY));
             }
+            currentToolTip.add(Component.literal(String.valueOf(getHeat(stack))).withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -69,8 +71,10 @@ public class CanisterItem extends Item {
             if (context.isSecondaryUseActive()) {
                 // Insert chemical if shifting
                 blockEntity.addContents(canisterContents);
+                blockEntity.setHeat(blockEntity.getHeat() + getHeat(canisterItemStack));
                 if (context.getPlayer() == null || !context.getPlayer().isCreative()) {
                     setContents(canisterItemStack, new Mixture());
+                    setHeat(canisterItemStack, 0);
                 }
             } else {
                 // Take chemical otherwise
@@ -78,24 +82,49 @@ public class CanisterItem extends Item {
                 double remainingCapacity = CANISTER_MAXIMUM_CAPACITY - canisterContents.getTotalAmount();
                 double blockEntityFillAmount = blockEntity.getContents().getTotalAmount();
                 Mixture transferredMix;
-                if(remainingCapacity >= blockEntityFillAmount){
+                double transferredHeat;
+                if (remainingCapacity >= blockEntityFillAmount) {
                     transferredMix = originalBlockEntityContents;
+                    transferredHeat = blockEntity.getHeat();
                     blockEntity.setContents(new Mixture());
+                    blockEntity.setHeat(0);
                 } else {
                     double amountRemoved = Math.min(remainingCapacity, blockEntityFillAmount);
                     double fractionRemoved = amountRemoved / blockEntityFillAmount;
+                    transferredHeat = blockEntity.getHeat() * fractionRemoved;
                     transferredMix = blockEntity.getContents().scale(fractionRemoved);
                     blockEntity.setContents(blockEntity.getContents().sub(transferredMix));
+                    blockEntity.setHeat(blockEntity.getHeat() - transferredHeat);
                 }
 
                 if (context.getPlayer() == null || !context.getPlayer().isCreative()) {
                     setContents(canisterItemStack, canisterContents.add(transferredMix));
+                    setHeat(canisterItemStack, getHeat(canisterItemStack) + transferredHeat);
                 }
             }
             level.sendBlockUpdated(pos, level.getBlockState(pos), level.getBlockState(pos), 2);
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
+    }
+
+    public static void setHeat(ItemStack canisterItemStack, double contents) {
+        if (canisterItemStack.getItem() != getInstance()) {
+            LOGGER.error("Attempted to set heat of non-canister item stack");
+            return;
+        }
+        CompoundTag itemStackTag = canisterItemStack.getOrCreateTag();
+        itemStackTag.putDouble("heat", contents);
+    }
+
+    public static double getHeat(ItemStack canisterItemStack) {
+        if (canisterItemStack.getItem() != getInstance()) {
+            LOGGER.error("Attempted to set heat of non-canister item stack");
+            return 0;
+        }
+        CompoundTag itemStackTag = canisterItemStack.getOrCreateTag();
+        if (!itemStackTag.contains("heat")) itemStackTag.putDouble("heat", 0);
+        return itemStackTag.getDouble("heat");
     }
 
     public static void setContents(ItemStack canisterItemStack, Mixture contents) {
@@ -124,9 +153,10 @@ public class CanisterItem extends Item {
         return new Mixture(contentsTag);
     }
 
-    public static ItemStack makeCanister(Mixture contents) {
+    public static ItemStack makeCanister(Mixture contents, double temperature) {
         ItemStack canisterItemStack = new ItemStack(CanisterItem.getInstance());
         setContents(canisterItemStack, contents);
+        setHeat(canisterItemStack, contents.getHeatCapacity() * temperature);
         return canisterItemStack;
     }
 }

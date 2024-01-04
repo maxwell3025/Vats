@@ -39,7 +39,16 @@ public class ChemicalMixBlockEntity extends BlockEntity {
     int time = 0;
     private static BlockEntityType<ChemicalMixBlockEntity> typeInstance = null;
     private static List<ChemicalReaction> reactionList = null;
-    private float heat;
+
+    public double getHeat() {
+        return heat;
+    }
+
+    public void setHeat(double heat) {
+        this.heat = heat;
+    }
+
+    private double heat;
     private static final double BLOCK_VOLUME = 1000;
     @NonNull
     private Mixture contents = new Mixture();
@@ -136,6 +145,10 @@ public class ChemicalMixBlockEntity extends BlockEntity {
         return new Vector4f(averageColor, opacity);
     }
 
+    public double getTemperature(){
+        return this.heat / this.contents.getHeatCapacity();
+    }
+
     @SubscribeEvent
     public void onChemTick(ChemicalTickEvent tick) {
         // Validate that tick is intended for this BlockEntity
@@ -158,10 +171,15 @@ public class ChemicalMixBlockEntity extends BlockEntity {
         for (Direction direction : Direction.values()) {
             if (getNeighbor(direction) != null) neighborCount++;
         }
-        // TODO tick internals
+
+        internalTick();
+    }
+
+    private void internalTick(){
+        if(this.contents.getTotalAmount() == 0) return;
+        double temperature = getTemperature();
         for (ChemicalReaction reaction : this.getReactionList()) {
             Map<Chemical, Integer> inputs = reaction.getInputs();
-            Map<Chemical, Integer> outputs = reaction.getOutputs();
             double inputProduct = 1;
             for (Map.Entry<Chemical, Integer> inputEntry : inputs.entrySet()) {
                 Chemical chemical = inputEntry.getKey();
@@ -170,11 +188,25 @@ public class ChemicalMixBlockEntity extends BlockEntity {
                 inputProduct *= Math.pow(concentration, coefficient);
             }
             double rate = inputProduct * reaction.getRateConstant();
+
+            Map<Chemical, Integer> outputs = reaction.getOutputs();
+            double outputProduct = 1;
+            for(Map.Entry<Chemical, Integer> outputEntry : outputs.entrySet()){
+                Chemical chemical = outputEntry.getKey();
+                int coefficient = outputEntry.getValue();
+                double concentration = this.contents.getAmount(chemical) / BLOCK_VOLUME;
+                outputProduct *= Math.pow(concentration, coefficient);
+            }
+            double invKeq = Math.exp(-reaction.getEntropyChange(temperature) / 8.314);
+            LOGGER.warn("K eq = {}", 1.0 / invKeq);
+            rate -= outputProduct * reaction.getRateConstant() * invKeq;
+
+
             double dt = 0.05;
-            //TODO implement backwards reaction
 
             this.contents = this.contents.add(reaction.getMolOutput().scale(rate * dt));
             this.contents = this.contents.sub(reaction.getMolInput().scale(rate * dt));
+            this.heat -= rate * dt * reaction.getEnergyChange(temperature);
         }
     }
 
@@ -182,17 +214,18 @@ public class ChemicalMixBlockEntity extends BlockEntity {
     protected void saveAdditional(@NotNull CompoundTag tag) {
         super.saveAdditional(tag);
         tag.put("contents", contents.serializeNBT());
+        tag.putDouble("heat", heat);
     }
 
     @Override
     public void load(@NotNull CompoundTag tag) {
         super.load(tag);
         contents = new Mixture(tag.getCompound("contents"));
+        heat = tag.getDouble("heat");
     }
 
     @Override
     public CompoundTag getUpdateTag() {
-        LOGGER.warn("getUpdateTag");
         CompoundTag tag = super.getUpdateTag();
         saveAdditional(tag);
         return tag;

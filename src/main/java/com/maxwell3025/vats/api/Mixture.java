@@ -41,6 +41,15 @@ public class Mixture {
         }
     }
 
+    public double getHeatCapacity(){
+        double totalCapacity = 0;
+        for (Map.Entry<Chemical, Double> entry: components.entrySet()) {
+            totalCapacity += entry.getKey().getHeatCapacity() * entry.getValue();
+        }
+        return totalCapacity;
+
+    }
+
     public double getAmount(Chemical chemical) {
         return components.getOrDefault(chemical, 0.0);
     }

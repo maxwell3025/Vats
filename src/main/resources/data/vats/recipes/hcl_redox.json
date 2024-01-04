@@ -4,7 +4,7 @@
     "vats:chlorine_gas": 1,
     "vats:hydrogen_gas": 1
   },
-  "rate": 1000,
+  "rate": 100,
   "output": {
     "vats:hydrogen_chloride_gas": 2
   }

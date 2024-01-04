@@ -39,9 +39,16 @@ public class CreativeMeterItem extends Item {
                         !context.getLevel().isClientSide &&
                         context.getPlayer() != null
         ) {
-            context.getPlayer().sendSystemMessage(Component.literal(chemicalMixBlockEntity.getReactionList().toString()));
-            context.getPlayer().sendSystemMessage(Component.literal(chemicalMixBlockEntity.getContents().toString()));
-            context.getPlayer().sendSystemMessage(Component.literal(chemicalMixBlockEntity.getColor().toString()));
+            StringBuilder message = new StringBuilder();
+            message.append("--READINGS--");
+            message.append("\nReactions: ");
+            message.append(chemicalMixBlockEntity.getReactionList());
+            message.append("\nContents: ");
+            message.append(chemicalMixBlockEntity.getContents().toString().trim());
+            message.append("\nTemperature: ");
+            message.append(chemicalMixBlockEntity.getTemperature());
+            message.append("K");
+            context.getPlayer().sendSystemMessage(Component.literal(message.toString()));
         }
         return InteractionResult.SUCCESS;
     }

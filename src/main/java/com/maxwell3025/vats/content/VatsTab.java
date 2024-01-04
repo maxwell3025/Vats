@@ -18,9 +18,9 @@ public class VatsTab {
                     .displayItems((params, output) -> {
                         output.accept(ChemicalMixItem.getInstance());
                         output.accept(CreativeMeterItem.getInstance());
-                        output.accept(CanisterItem.makeCanister(new Mixture()));
+                        output.accept(CanisterItem.makeCanister(new Mixture(), 0));
                         for (Chemical chemical : RegisterHandler.CHEMICAL_REGISTRY.get()) {
-                            output.accept(CanisterItem.makeCanister(new Mixture(chemical, 1000)));
+                            output.accept(CanisterItem.makeCanister(new Mixture(chemical, 1000), 298.15));
                         }
                     })
                     .build();

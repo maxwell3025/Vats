@@ -86,6 +86,9 @@ public class ChemicalReaction implements Recipe<Container> {
         return outputMol;
     }
 
+    /**
+     * Returns the change in chemical energy when one mole of the reaction is performed at the given temperature in kelvin
+     */
     public double getEnergyChange(double temperature){
         double energyChange = 0;
         for(Chemical outputChemical: this.outputs.keySet()){
@@ -98,6 +101,11 @@ public class ChemicalReaction implements Recipe<Container> {
         return energyChange;
     }
 
+    /**
+     * Returns the change in entropy when one mole of the reaction is performed at the given temperature in kelvin.
+     * <p>
+     * This includes the entropy change resulting from heat generation.
+     */
     public double getEntropyChange(double temperature){
         double entropyChange = 0;
         for(Chemical outputChemical: this.outputs.keySet()){
@@ -107,6 +115,7 @@ public class ChemicalReaction implements Recipe<Container> {
         for(Chemical inputChemical: this.inputs.keySet()){
             entropyChange -= inputChemical.getEntropy(temperature) * inputs.get(inputChemical);
         }
+        if(temperature == 0) return 0; //Entropy can't change at absolute zero
         return entropyChange - getEnergyChange(temperature) / temperature;
     }
     @Override
